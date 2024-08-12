@@ -1,0 +1,11 @@
+.DS_Store
+LICENSE
+.env
+.gitignore
+.dockerignore
+dockerfile
+*.md
+.git/
+tests/
+__pycache__/
+.vscode/
