@@ -1,9 +1,9 @@
 from sys import _getframe
-from logging import getLogger
 from bcrypt import checkpw
 from fastapi import APIRouter, HTTPException, Response, Query
 from aredis_om.model.model import NotFoundError
 
+from .logging import LOGGER
 from .settings import settings
 from .schema import (
     User,
@@ -14,17 +14,25 @@ from .schema import (
     UserPasswordUpdate,
 )
 
-_LOGGER = getLogger(f"{settings.service_name}.routes")
-
 router = APIRouter(responses={404: {"description": "Not found"}})
 
 
-@router.post("/", response_model=User)
+@router.post("/", response_model=UserPublic)
 async def create_user(data: UserCreate) -> UserPublic:
-    if await User.find(
-        (User.username == data.username) | (User.email == data.email)
-    ).all():
-        raise HTTPException(404, "User already exists")
+    try:
+        await User.find(
+            (User.username == data.username) | (User.email == data.email)
+        ).first()
+        raise HTTPException(403, "User already exists")
+    except NotFoundError as e:
+        pass
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        LOGGER.warning(
+            f"neu.{settings.service_name}.{__name__}.{_getframe().f_code.co_name}: {e}"
+        )
+
     data = User.model_validate(data)
     await data.save()
     return data
@@ -57,21 +65,24 @@ async def get_users(
 
 
 @router.get("/{pk}", response_model=UserPublic)
-async def get_user(pk: str) -> UserPublic:
+async def get_user(*, pk: str) -> UserPublic:
     try:
         return await User.get(pk)
     except NotFoundError as e:
-        _LOGGER.error(f"{_getframe().f_code.co_name}: {e}")
-        raise HTTPException(404, "Not Found")
+        LOGGER.error(
+            f"neu.{settings.service_name}.{__name__}.{_getframe().f_code.co_name}: {e}"
+        )
+        raise HTTPException(404, f"User {pk} not found")
 
 
 @router.patch("/{pk}", response_model=UserPublic)
 async def update_user(
+    *,
     pk: str,
     data: UserUpdate,
     overwrite: bool = Query(False, description="Overwrite extra data"),
 ) -> UserPublic:
-    user = await User.get(pk)
+    user = await get_user(pk=pk)
 
     if data.extra is not None:
         if user.extra is not None and not overwrite:
@@ -86,8 +97,8 @@ async def update_user(
 
 
 @router.patch("/password/{pk}", response_model=UserPublic)
-async def update_password(pk: str, data: UserPasswordUpdate) -> UserPublic:
-    user = await User.get(pk)
+async def update_password(*, pk: str, data: UserPasswordUpdate) -> UserPublic:
+    user = await get_user(pk=pk)
 
     if not checkpw(data.old_password.encode(), user.password.encode()):
         raise HTTPException(404, "Not Permitted")
@@ -98,9 +109,11 @@ async def update_password(pk: str, data: UserPasswordUpdate) -> UserPublic:
 
 
 @router.delete("/{pk}")
-async def delete_user(pk: str) -> Response:
-    user = await User.get(pk)
+async def delete_user(*, pk: str) -> Response:
+    user = await get_user(pk=pk)
+
     if user.superuser:
         raise HTTPException(404, "Superuser cannot be deleted")
+
     await User.delete(pk)
     return Response("Deleted")

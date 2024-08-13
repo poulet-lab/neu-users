@@ -1,19 +1,8 @@
-from re import match
-from bcrypt import hashpw, gensalt
 from pydantic import BaseModel, EmailStr, field_validator, model_validator
 from aredis_om import JsonModel, Field, get_redis_connection
+
+from neu_sdk.security import password_strength, encrypt_password
 from .settings import settings
-
-
-def password_strength(password):
-    if not match(
-        r"^.*(?=.{8})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@£$%^&*()_+={}?:~\[\]])[a-zA-Z0-9!@£$%^&*()_+={}?:~\[\]]+$",
-        password,
-    ):
-        raise ValueError(
-            "Password must be at least 8 characters long and include at least one number, one lowercase letter, one uppercase letter, and one special character."
-        )
-    return True
 
 
 class UserBase(BaseModel):
@@ -24,9 +13,10 @@ class UserBase(BaseModel):
     username: str = Field(index=True, full_text_search=True, max_length=16)
     password: str = Field(index=True)
     email: EmailStr = Field(index=True, full_text_search=True, max_length=32)
+    extra: dict | None = Field(None)
 
 
-class User(JsonModel, UserBase, extra="ignore"):
+class User(JsonModel, UserBase):
     class Meta:
         database = get_redis_connection(url=settings.redis_url, decode_responses=True)
 
@@ -40,18 +30,16 @@ class User(JsonModel, UserBase, extra="ignore"):
         return extra
 
 
-class UserCreate(UserBase, extra="ignore"):
-    extra: dict | None = Field(None)
-
+class UserCreate(UserBase):
     @field_validator("password")
     def hash_password(cls, password: str) -> str:
         if password_strength(password):
-            return hashpw(password.encode(), gensalt()).decode()
+            return encrypt_password(password)
         return password
 
 
-class UserPublic(UserBase, extra="ignore"):
-    extra: dict | None = Field(None)
+class UserPublic(UserBase):
+    pk: str
 
     @field_validator("extra", mode="before")
     def deserialize_extra(cls, extra: str | None) -> dict:
@@ -60,7 +48,7 @@ class UserPublic(UserBase, extra="ignore"):
         return extra
 
 
-class UserPublicRestricted(BaseModel, extra="ignore"):
+class UserPublicRestricted(BaseModel):
     pk: str
     username: str
 
@@ -87,5 +75,4 @@ class UserPasswordUpdate(BaseModel):
             raise ValueError("new password cannot be the same as old one")
 
         if password_strength(self.password):
-            self.password = hashpw(self.password.encode(), gensalt()).decode()
-        return self
+            self.password = encrypt_password(self.password)

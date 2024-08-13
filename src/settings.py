@@ -21,7 +21,7 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    service_name: str = Field("user")
+    service_name: str = Field("users")
     root_path: str = Field("/user")
     docs_url: str = Field("/docs")
     redis_url: str = Field("redis://localhost:6379/0")

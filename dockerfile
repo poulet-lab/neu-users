@@ -2,6 +2,13 @@ FROM python:3.12-slim
 
 WORKDIR /code/neu
 
+RUN apt update \
+    && apt upgrade -y \
+    && apt install git -y \
+    && apt clean -y \
+    && apt autoremove -y
+
+
 COPY requirements.txt requirements.txt
 
 RUN pip install --no-cache-dir --upgrade pip setuptools \

@@ -1,25 +1,23 @@
 from sys import _getframe
-from logging import getLogger, basicConfig
 from datetime import datetime
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from aredis_om import Migrator
 
+from .logging import LOGGER
 from .settings import settings
 from .routes import router
 from .schema import *
-
-basicConfig(level=settings.log_level.upper())
-
-_LOGGER = getLogger(f"neu.{settings.service_name}")
 
 
 async def lifespan(app):
     await Migrator().run()
 
     try:
-        if not await User.find(User.superuser == True).all():
-            _LOGGER.info(f"{_getframe().f_code.co_name}: creating superuser")
+        if not await User.find(User.superuser == True).first():
+            LOGGER.info(
+                f"neu.{settings.service_name}.{__name__}.{_getframe().f_code.co_name}: creating superuser"
+            )
             user = UserCreate(
                 first_name=settings.admin.first_name,
                 last_name=settings.admin.last_name,
@@ -33,9 +31,11 @@ async def lifespan(app):
             )
             await user.save()
         else:
-            _LOGGER.info(f"{_getframe().f_code.co_name}: superuser exists")
+            LOGGER.info(
+                f"neu.{settings.service_name}.{__name__}.{_getframe().f_code.co_name}: superuser exists"
+            )
     except Exception as e:
-        _LOGGER.error(f"{_getframe().f_code.co_name}: {e}")
+        LOGGER.error(f"{_getframe().f_code.co_name}: {e}")
         raise RuntimeError("Internal Server Error")
 
     yield

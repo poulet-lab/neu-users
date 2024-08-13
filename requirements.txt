@@ -8,4 +8,4 @@ redis[hiredis]==5.0.8
 redis-om==0.3.2
 fastapi-cache2==0.2.2
 orjson==3.10.7
-
+neu-sdk @ git+https://github.com/poulet-lab/neu-sdk@0.0.1
