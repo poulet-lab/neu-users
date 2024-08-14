@@ -2,10 +2,9 @@ from sys import _getframe
 from bcrypt import checkpw
 from fastapi import APIRouter, HTTPException, Response, Query
 from aredis_om.model.model import NotFoundError
+from neu_sdk.config import LOGGER, settings
 
-from .logging import LOGGER
-from .settings import settings
-from .schema import (
+from schema import (
     User,
     UserPublic,
     UserCreate,
@@ -30,7 +29,7 @@ async def create_user(data: UserCreate) -> UserPublic:
         raise e
     except Exception as e:
         LOGGER.warning(
-            f"neu.{settings.service_name}.{__name__}.{_getframe().f_code.co_name}: {e}"
+            f"{settings.service.name}.{__name__}.{_getframe().f_code.co_name}: {e}"
         )
 
     data = User.model_validate(data)
@@ -69,9 +68,6 @@ async def get_user(*, pk: str) -> UserPublic:
     try:
         return await User.get(pk)
     except NotFoundError as e:
-        LOGGER.error(
-            f"neu.{settings.service_name}.{__name__}.{_getframe().f_code.co_name}: {e}"
-        )
         raise HTTPException(404, f"User {pk} not found")
 
 

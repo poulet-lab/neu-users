@@ -8,12 +8,11 @@ RUN apt update \
     && apt clean -y \
     && apt autoremove -y
 
-
 COPY requirements.txt requirements.txt
 
 RUN pip install --no-cache-dir --upgrade pip setuptools \
     && pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+COPY src src
 
-CMD ["fastapi", "run", "src/main.py",  "--proxy-headers", "--port", "80"]
+CMD ["python", "src/main.py" ]

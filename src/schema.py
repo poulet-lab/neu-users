@@ -1,8 +1,7 @@
 from pydantic import BaseModel, EmailStr, field_validator, model_validator
 from aredis_om import JsonModel, Field, get_redis_connection
-
 from neu_sdk.security import password_strength, encrypt_password
-from .settings import settings
+from neu_sdk.config import settings
 
 
 class UserBase(BaseModel):
@@ -11,7 +10,7 @@ class UserBase(BaseModel):
         None, index=True, full_text_search=True, max_length=32
     )
     username: str = Field(index=True, full_text_search=True, max_length=16)
-    password: str = Field(index=True)
+    password: str = Field()
     email: EmailStr = Field(index=True, full_text_search=True, max_length=32)
     extra: dict | None = Field(None)
 
