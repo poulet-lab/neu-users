@@ -6,4 +6,4 @@ email-validator==2.2.0
 bcrypt==4.2.0
 redis[hiredis]==5.0.8
 redis-om==0.3.2
-neu-sdk @ git+https://github.com/poulet-lab/neu-sdk@main
+neu-sdk @ git+https://github.com/poulet-lab/neu-sdk
