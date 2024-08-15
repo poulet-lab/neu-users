@@ -1,7 +1,7 @@
 from pydantic import BaseModel, EmailStr, field_validator, model_validator
 from aredis_om import JsonModel, Field, get_redis_connection
 from neu_sdk.security import password_strength, encrypt_password
-from neu_sdk.config import settings
+from neu_sdk.config import REDIS_URL
 
 
 class UserBase(BaseModel):
@@ -17,7 +17,7 @@ class UserBase(BaseModel):
 
 class User(JsonModel, UserBase):
     class Meta:
-        database = get_redis_connection(url=settings.redis_url, decode_responses=True)
+        database = get_redis_connection(url=REDIS_URL, decode_responses=True)
 
     superuser: bool = Field(False, index=True)
     extra: str | None = Field(None, index=True, full_text_search=True)

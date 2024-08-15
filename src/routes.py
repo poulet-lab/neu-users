@@ -29,7 +29,7 @@ async def create_user(data: UserCreate) -> UserPublic:
         raise e
     except Exception as e:
         LOGGER.warning(
-            f"{settings.service.name}.{__name__}.{_getframe().f_code.co_name}: {e}"
+            f"{settings.neu.service.name}.{__name__}.{_getframe().f_code.co_name}: {e}"
         )
 
     data = User.model_validate(data)
