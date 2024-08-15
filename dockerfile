@@ -5,8 +5,8 @@ WORKDIR /code/neu
 RUN apt update \
     && apt upgrade -y \
     && apt install git -y \
-    && apt clean -y \
-    && apt autoremove -y
+    && apt autoremove -y \
+    && apt clean -y
 
 COPY requirements.txt requirements.txt
 
