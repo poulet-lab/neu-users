@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr, field_validator, model_validator
 from aredis_om import JsonModel, Field, get_redis_connection
+
 from neu_sdk.security import password_strength, encrypt_password
 from neu_sdk.config import REDIS_URL
 
