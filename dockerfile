@@ -12,7 +12,7 @@ RUN pip install --no-cache-dir --upgrade pip setuptools \
 
 RUN touch README.md
 
-COPY pyproject.toml poetry.lock ./
+COPY pyproject.toml pyproject.toml
 
 RUN poetry  install --no-interaction --no-cache --no-root \
     && rm -rf $POETRY_CACHE_DIR

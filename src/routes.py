@@ -1,8 +1,8 @@
 from sys import _getframe
-from bcrypt import checkpw
 from fastapi import APIRouter, HTTPException, Response, Query
 from aredis_om.model.model import NotFoundError
 from neu_sdk.config import LOGGER, settings
+from neu_sdk.security import check_password
 
 from schema import (
     User,
@@ -96,7 +96,7 @@ async def update_user(
 async def update_password(*, pk: str, data: UserPasswordUpdate) -> UserPublic:
     user = await get_user(pk=pk)
 
-    if not checkpw(data.old_password.encode(), user.password.encode()):
+    if not check_password(data.old_password, user.password):
         raise HTTPException(404, "Not Permitted")
 
     await user.update(password=data.password)
