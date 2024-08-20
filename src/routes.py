@@ -106,6 +106,7 @@ async def update_password(*, pk: str, data: UserPasswordUpdate) -> UserPublic:
 
 @router.delete("/{pk}")
 async def delete_user(*, pk: str) -> Response:
+    # TODO Delete all dependencies
     user = await get_user(pk=pk)
 
     if user.superuser:
