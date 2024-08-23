@@ -4,7 +4,7 @@ from aredis_om.model.model import NotFoundError
 from neu_sdk.config import LOGGER, settings
 from neu_sdk.security import check_password
 
-from schema import (
+from schemas import (
     User,
     UserPublic,
     UserCreate,
@@ -13,7 +13,7 @@ from schema import (
     UserPasswordUpdate,
 )
 
-router = APIRouter(responses={404: {"description": "Not found"}})
+router = APIRouter(tags=["users"], responses={404: {"description": "Not found"}})
 
 
 @router.post("/", response_model=UserPublic)
