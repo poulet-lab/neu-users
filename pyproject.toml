@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "neu-users"
-version = "0.0.5"
+version = "0.1.0"
 description = "Users microservice for Neu"
 authors = ["Viktor Karamanis"]
 license = "GPL-3.0-or-later"
