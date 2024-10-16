@@ -19,5 +19,5 @@ docker:
 	docker build \
 		-f dockerfile \
 		--label "git_sha=$(GIT_SHA)" \
-		-t edgexfoundry/${MICROSERVICE}:$(APPVERSION) \
+		-t neu/${MICROSERVICE}:$(APPVERSION) \
 		.
