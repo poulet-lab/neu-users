@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "neu-users"
-version = "0.1.0"
+version = "0.1.1"
 description = "Users microservice for Neu"
 authors = ["Viktor Karamanis"]
 license = "GPL-3.0-or-later"
@@ -17,7 +17,7 @@ email-validator = "^2.2.0"
 bcrypt = "^4.2.0"
 redis = "^5.0.8"
 redis-om = "^0.3.2"
-neu-sdk = { git = "https://github.com/poulet-lab/neu-sdk" }
+neu-sdk = { git = "https://github.com/poulet-lab/neu-sdk", tag = "0.1.1" }
 
 [build-system]
 requires = ["poetry-core"]
