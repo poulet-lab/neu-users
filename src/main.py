@@ -5,7 +5,10 @@ from neu_sdk.interface import create_app
 from routes import router
 from schemas import *
 
-app = create_app(service_id="neu-users", tags=["neu", "microservice", "users"])
+settings.neu.service.name = "neu-users"
+settings.neu.service.tags = ["neu", "microservice", "users"]
+
+app = create_app()
 app.include_router(router)
 
 if __name__ == "__main__":
