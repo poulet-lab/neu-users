@@ -1,17 +1,11 @@
-from sys import _getframe
-from fastapi import APIRouter, HTTPException, Response, Query
+from ast import literal_eval
+
 from aredis_om.model.model import NotFoundError
-from neu_sdk.config import LOGGER, settings
+from fastapi import APIRouter, HTTPException, Query, Response
+from neu_sdk.config import LOGGER
 from neu_sdk.security import check_password
 
-from schemas import (
-    User,
-    UserPublic,
-    UserCreate,
-    UserUpdate,
-    UserPublicRestricted,
-    UserPasswordUpdate,
-)
+from neu_users.schemas import User, UserCreate, UserPasswordUpdate, UserPublic, UserPublicRestricted, UserUpdate
 
 router = APIRouter(tags=["users"], responses={404: {"description": "Not found"}})
 
@@ -19,18 +13,14 @@ router = APIRouter(tags=["users"], responses={404: {"description": "Not found"}}
 @router.post("/", response_model=UserPublic)
 async def create_user(data: UserCreate) -> UserPublic:
     try:
-        await User.find(
-            (User.username == data.username) | (User.email == data.email)
-        ).first()
+        await User.find((User.username == data.username) | (User.email == data.email)).first()
         raise HTTPException(403, "User already exists")
     except NotFoundError as e:
         pass
     except HTTPException as e:
         raise e
     except Exception as e:
-        LOGGER.warning(
-            f"{settings.neu.service.name}.{__name__}.{_getframe().f_code.co_name}: {e}"
-        )
+        LOGGER.warning(e)
 
     data = User.model_validate(data)
     await data.save()
@@ -68,7 +58,7 @@ async def get_user(*, pk: str) -> UserPublic:
     try:
         return await User.get(pk)
     except NotFoundError as e:
-        raise HTTPException(404, f"User {pk} not found")
+        raise HTTPException(404, f"User {pk} not found") from e
 
 
 @router.patch("/{pk}", response_model=UserPublic)
@@ -82,7 +72,7 @@ async def update_user(
 
     if data.extra is not None:
         if user.extra is not None and not overwrite:
-            extra = eval(user.extra)
+            extra = literal_eval(user.extra)
             extra.update(data.extra)
             data.extra = extra
         data.extra = str(data.extra)

@@ -2,9 +2,11 @@
 LICENSE
 .env
 .gitignore
+.github/
+.pytest_cache/
+.ruff_cache/
 .dockerignore
 dockerfile
-*.md
 .git/
 tests/
 __pycache__/
