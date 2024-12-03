@@ -52,7 +52,7 @@ allow-direct-references = true
 
 [tool.hatch.envs.lint]
 detached = true
-dependencies = ["mypy>=1.13.0", "ruff>=0.7.2"]
+dependencies = ["mypy", "ruff"]
 
 [tool.hatch.envs.lint.scripts]
 typing = "mypy --install-types --non-interactive {args:neu_users tests}"
