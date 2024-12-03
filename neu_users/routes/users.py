@@ -5,7 +5,14 @@ from fastapi import APIRouter, HTTPException, Query, Response
 from neu_sdk.config import LOGGER
 from neu_sdk.security import check_password
 
-from neu_users.schemas import User, UserCreate, UserPasswordUpdate, UserPublic, UserPublicRestricted, UserUpdate
+from neu_users.schemas import (
+    User,
+    UserCreate,
+    UserPasswordUpdate,
+    UserPublic,
+    UserPublicRestricted,
+    UserUpdate,
+)
 
 router = APIRouter(tags=["users"], responses={404: {"description": "Not found"}})
 
@@ -13,7 +20,9 @@ router = APIRouter(tags=["users"], responses={404: {"description": "Not found"}}
 @router.post("/", response_model=UserPublic)
 async def create_user(data: UserCreate) -> UserPublic:
     try:
-        await User.find((User.username == data.username) | (User.email == data.email)).first()
+        await User.find(
+            (User.username == data.username) | (User.email == data.email)
+        ).first()
         raise HTTPException(403, "User already exists")
     except NotFoundError as e:
         pass
@@ -37,7 +46,7 @@ async def get_users(
     offset: int = Query(0),
     limit: int = Query(100),
 ) -> list[UserPublicRestricted]:
-    expression = []
+    expression = [(User.superuser == False)]
 
     if name:
         expression += [(User.first_name % f"*{name}*") | (User.last_name % f"*{name}*")]
