@@ -1,0 +1,105 @@
+{
+  "version": "v1",
+  "definitions": {
+    "request": {
+      "user": {
+        "service_name": "neu-users",
+        "route": "/{current_user_pk}",
+        "fields": {
+          "user_pk": {
+            "api_name": "pk"
+          },
+          "first_name": {
+            "display_name": "First Name",
+            "required": true
+          },
+          "last_name": {
+            "display_name": "Last Name"
+          },
+          "username": {
+            "display_name": "Username",
+            "type": "username",
+            "required": true,
+            "dangerous": true
+          },
+          "email": {
+            "display_name": "Email",
+            "type": "email",
+            "required": true
+          },
+          "password": {
+            "display_name": "Password",
+            "type": "password",
+            "required": true,
+            "dangerous": true
+          },
+          "repeat_password": {
+            "display_name": "Repeat Password",
+            "type": "password",
+            "required": true
+          },
+          "extra": {
+            "display_name": "Extra",
+            "type": "json"
+          }
+        }
+      }
+    },
+    "functions": {
+      "create": {
+        "fields": [
+          "first_name",
+          "last_name",
+          "username",
+          "email",
+          "password",
+          "repeat_password",
+          "extra"
+        ]
+      },
+      "update": {
+        "fields": [
+          "first_name",
+          "last_name",
+          "username",
+          "email",
+          "extra"
+        ]
+      }
+    }
+  },
+  "pages": [
+    {
+      "path": "/users/{user_pk}",
+      "modules": {
+        "main": [
+          {
+            "name": "details",
+            "type": "container",
+            "components": [
+              {
+                "name": "info",
+                "type": "ordered_box",
+                "title": "Information",
+                "fields": [
+                  "first_name",
+                  "last_name",
+                  "username",
+                  "email"
+                ]
+              },
+              {
+                "name": "extra",
+                "type": "json",
+                "title": "Extra",
+                "fields": [
+                  "extra"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

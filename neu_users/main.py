@@ -32,7 +32,7 @@ app = create_app(
     tags=["neu", "microservice", "users"],
     app_version=app_version,
     schema_version=schema_version,
-    lifespan_before=[create_superuser()],
+    lifespan_before=[create_superuser],
 )
 app.include_router(router)
 

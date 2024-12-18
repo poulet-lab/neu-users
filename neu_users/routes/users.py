@@ -20,9 +20,7 @@ router = APIRouter(tags=["users"], responses={404: {"description": "Not found"}}
 @router.post("/", response_model=UserPublic)
 async def create_user(data: UserCreate) -> UserPublic:
     try:
-        await User.find(
-            (User.username == data.username) | (User.email == data.email)
-        ).first()
+        await User.find((User.username == data.username) | (User.email == data.email)).first()
         raise HTTPException(403, "User already exists")
     except NotFoundError as e:
         pass
@@ -30,7 +28,6 @@ async def create_user(data: UserCreate) -> UserPublic:
         raise e
     except Exception as e:
         LOGGER.warning(e)
-
     data = User.model_validate(data)
     await data.save()
     return data

@@ -1,4 +1,5 @@
 from ast import literal_eval
+from typing import Self
 
 from aredis_om import Field, JsonModel, get_redis_connection
 from neu_sdk.config import REDIS_URL
@@ -10,7 +11,6 @@ class UserBase(BaseModel):
     first_name: str = Field(index=True, full_text_search=True, max_length=32)
     last_name: str | None = Field(None, index=True, full_text_search=True, max_length=32)
     username: str = Field(index=True, full_text_search=True, max_length=16)
-    password: str = Field()
     email: EmailStr = Field(index=True, full_text_search=True, max_length=32)
     extra: dict | None = Field(None)
 
@@ -18,6 +18,8 @@ class UserBase(BaseModel):
 class User(JsonModel, UserBase):
     class Meta:
         database = get_redis_connection(url=REDIS_URL, decode_responses=True)
+
+    password: str = Field()
 
     superuser: bool = Field(False, index=True)
     extra: str | None = Field(None, index=True, full_text_search=True)
@@ -31,12 +33,19 @@ class User(JsonModel, UserBase):
 
 
 class UserCreate(UserBase):
-    @field_validator("password")
-    @classmethod
-    def hash_password(cls, password: str) -> str:
-        if password_strength(password):
-            return encrypt_password(password)
-        return password
+    password: str = Field()
+    repeat_password: str
+
+    @model_validator(mode="after")
+    def check_passwords(self) -> Self:
+        if self.password != self.repeat_password:
+            msg = "Passwords do not match"
+            raise ValueError(msg)
+
+        if password_strength(self.password):
+            self.password = encrypt_password(self.password)
+
+        return self
 
 
 class UserPublic(UserBase):
