@@ -50,6 +50,8 @@ class UserCreate(UserBase):
 
 class UserPublic(UserBase):
     pk: str
+    # TODO fix leak
+    password: str = Field()
 
     @field_validator("extra", mode="before")
     @classmethod

@@ -1,6 +1,7 @@
 from aredis_om import NotFoundError
 from neu_sdk.config import LOGGER
 from neu_sdk.interface import create_app
+from neu_sdk.schemas import InterfaceOptions
 from uvicorn import run
 
 from neu_users import __version__ as app_version
@@ -28,10 +29,7 @@ async def create_superuser():
 
 
 app = create_app(
-    service_name="neu-users",
-    tags=["neu", "microservice", "users"],
-    app_version=app_version,
-    schema_version=schema_version,
+    options=InterfaceOptions(name="users", app_version=app_version, schema_version=schema_version),
     lifespan_before=[create_superuser],
 )
 app.include_router(router)
