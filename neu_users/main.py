@@ -29,7 +29,7 @@ async def create_superuser():
 
 
 app = create_app(
-    options=InterfaceOptions(name="users", app_version=app_version, schema_version=schema_version),
+    options=InterfaceOptions(name="users", app_version=app_version, schema_version=schema_version, ui=True),
     lifespan_before=[create_superuser],
 )
 app.include_router(router)
