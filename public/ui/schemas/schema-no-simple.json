@@ -1,0 +1,200 @@
+{
+  "version": "v1",
+  "definitions": {
+    "request": {
+      "user": {
+        "service_name": "neu-users",
+        "route": "/{current_pk}",
+        "fields": {
+          "user_pk": {
+            "api_name": "pk"
+          },
+          "first_name": {
+            "display_name": "First Name",
+            "required": true
+          },
+          "last_name": {
+            "display_name": "Last Name"
+          },
+          "username": {
+            "display_name": "Username",
+            "type": "username",
+            "required": true,
+            "dangerous": true
+          },
+          "email": {
+            "display_name": "Email",
+            "type": "email",
+            "required": true
+          },
+          "password": {
+            "display_name": "Password",
+            "type": "password",
+            "required": true,
+            "dangerous": true
+          },
+          "repeat_password": {
+            "display_name": "Repeat Password",
+            "type": "password",
+            "required": true
+          },
+          "extra": {
+            "display_name": "Extra",
+            "type": "json"
+          }
+        }
+      },
+      "user_orgs_links": {
+        "service_name": "neu-organizations",
+        "route": "/users/{user_pk}",
+        "is_list": true,
+        "fields": {
+          "organization_pk": {}
+        }
+      },
+      "user_orgs": {
+        "service_name": "neu-organizations",
+        "route": "/{organization_pk}",
+        "fields": {
+          "organization_name": {
+            "api_name": "name",
+            "display_name": "Organization"
+          }
+        }
+      },
+      "user_team_links": {
+        "service_name": "neu-teams",
+        "route": "/users/{user_pk}",
+        "is_list": true,
+        "fields": {
+          "team_pk": {}
+        }
+      },
+      "user_teams": {
+        "service_name": "neu-teams",
+        "route": "/{team_pk}",
+        "fields": {
+          "team_name": {
+            "api_name": "name",
+            "display_name": "Team"
+          }
+        }
+      },
+      "user_projects_links": {
+        "service_name": "neu-projects",
+        "route": "/users/{user_pk}",
+        "is_list": true,
+        "fields": {
+          "project_pk": {}
+        }
+      },
+      "user_projects": {
+        "service_name": "neu-projects",
+        "route": "/{project_pk}",
+        "fields": {
+          "project_name": {
+            "api_name": "name",
+            "display_name": "Project Name"
+          }
+        }
+      },
+      "org_projects": {
+        "service_name": "neu-projects",
+        "route": "/all?owner_pk={organization_pk}",
+        "is_list": true,
+        "fields": {
+          "project_name": {
+            "api_name": "name",
+            "display_name": "Project Name"
+          }
+        }
+      }
+    },
+    "functions": {
+      "create": {
+        "fields": [
+          "first_name",
+          "last_name",
+          "username",
+          "email",
+          "password",
+          "repeat_password",
+          "extra"
+        ]
+      },
+      "update": {
+        "fields": [
+          "first_name",
+          "last_name",
+          "username",
+          "email",
+          "extra"
+        ]
+      }
+    }
+  },
+  "pages": [
+    {
+      "path": "/users/{user_pk}",
+      "modules": {
+        "main": [
+          {
+            "name": "details",
+            "type": "container",
+            "components": [
+              {
+                "name": "info",
+                "type": "ordered_box",
+                "title": "Information",
+                "fields": [
+                  "first_name",
+                  "last_name",
+                  "username",
+                  "email"
+                ]
+              },
+              {
+                "name": "extra",
+                "type": "json",
+                "title": "Extra",
+                "fields": [
+                  "extra"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "links",
+            "type": "container",
+            "components": [
+              {
+                "name": "organizations",
+                "type": "table",
+                "title": "Organizations",
+                "fields": [
+                  "organization_name"
+                ]
+              },
+              {
+                "name": "teams",
+                "type": "table",
+                "title": "Teams",
+                "fields": [
+                  "team_name"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "projects",
+            "type": "table",
+            "title": "User Projects",
+            "fields": [
+              "project_name"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
