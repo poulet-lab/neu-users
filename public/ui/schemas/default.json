@@ -1,105 +1,138 @@
 {
   "version": "v1",
-  "definitions": {
-    "request": {
-      "user": {
-        "service_name": "neu-users",
-        "route": "/{current_user_pk}",
-        "fields": {
-          "user_pk": {
-            "api_name": "pk"
-          },
-          "first_name": {
-            "display_name": "First Name",
-            "required": true
-          },
-          "last_name": {
-            "display_name": "Last Name"
-          },
-          "username": {
-            "display_name": "Username",
-            "type": "username",
-            "required": true,
-            "dangerous": true
-          },
-          "email": {
-            "display_name": "Email",
-            "type": "email",
-            "required": true
-          },
-          "password": {
-            "display_name": "Password",
-            "type": "password",
-            "required": true,
-            "dangerous": true
-          },
-          "repeat_password": {
-            "display_name": "Repeat Password",
-            "type": "password",
-            "required": true
-          },
-          "extra": {
-            "display_name": "Extra",
-            "type": "json"
-          }
+  "requests": {
+    "get_users": {
+      "service_name": "neu-users",
+      "path": "/all"
+    },
+    "get_user": {
+      "service_name": "neu-users",
+      "path": "/{pk}"
+    },
+    "create_user": {
+      "service_name": "neu-users",
+      "path": "/",
+      "method": "POST",
+      "fields": {
+        "first_name": {
+          "label": "First Name",
+          "type": "string",
+          "required": true
+        },
+        "last_name": {
+          "label": "Last Name",
+          "type": "string",
+          "required": false
+        },
+        "username": {
+          "label": "Username",
+          "type": "string",
+          "required": true
+        },
+        "password": {
+          "label": "Password",
+          "type": "password",
+          "required": true
+        },
+        "repeat_password": {
+          "label": "Repeat Password",
+          "type": "password",
+          "required": true
+        },
+        "email": {
+          "label": "Email",
+          "type": "email",
+          "required": true
+        },
+        "extra": {
+          "label": "Extra",
+          "type": "json",
+          "required": false
         }
       }
     },
-    "functions": {
-      "create": {
-        "fields": [
-          "first_name",
-          "last_name",
-          "username",
-          "email",
-          "password",
-          "repeat_password",
-          "extra"
-        ]
-      },
-      "update": {
-        "fields": [
-          "first_name",
-          "last_name",
-          "username",
-          "email",
-          "extra"
-        ]
+    "update_user": {
+      "service_name": "neu-user",
+      "path": "/{pk}",
+      "method": "PATCH",
+      "fields": {
+        "first_name": {
+          "label": "First Name",
+          "type": "string",
+          "required": true
+        },
+        "last_name": {
+          "label": "Last Name",
+          "type": "string",
+          "required": false
+        },
+        "username": {
+          "label": "Username",
+          "type": "string",
+          "required": true
+        },
+        "email": {
+          "label": "Email",
+          "type": "email",
+          "required": true
+        },
+        "extra": {
+          "label": "Extra",
+          "type": "json",
+          "required": false
+        }
       }
+    },
+    "delete_user": {
+      "service_name": "neu-user",
+      "path": "/{pk}",
+      "method": "DELETE"
     }
   },
-  "pages": [
-    {
-      "path": "/users/{user_pk}",
-      "modules": {
-        "main": [
-          {
-            "name": "details",
-            "type": "container",
-            "components": [
-              {
-                "name": "info",
-                "type": "ordered_box",
-                "title": "Information",
-                "fields": [
-                  "first_name",
-                  "last_name",
-                  "username",
-                  "email"
-                ]
-              },
-              {
-                "name": "extra",
-                "type": "json",
-                "title": "Extra",
-                "fields": [
-                  "extra"
-                ]
+  "pages": {
+    "/users": {
+      "section": {
+        "header": {
+          "title": "Users"
+        },
+        "main": {
+          "components": [
+            {
+              "key": "users",
+              "type": "list",
+              "title": "Users",
+              "request": "get_users",
+              "elements": {
+                "add": {
+                  "request": "create_user"
+                }
               }
-            ]
-          }
-        ]
+            }
+          ]
+        }
+      }
+    },
+    "/users/{pk}": {
+      "section": {
+        "main": {
+          "components": [
+            {
+              "key": "user",
+              "type": "plain",
+              "title": "{.first_name}",
+              "request": "get_user",
+              "elements": {
+                "update": {
+                  "request": "update_user"
+                },
+                "delete": {
+                  "request": "delete_user"
+                }
+              }
+            }
+          ]
+        }
       }
     }
-  ]
+  }
 }
